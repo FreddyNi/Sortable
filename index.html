@@ -58,6 +58,13 @@
     <!-- For example, initial tasks can be added here if needed -->
   </ul>
 
+  <!-- Add this inside the body -->
+  <div id="task-input-modal" style="display:none;">
+    <input type="text" id="task-input" placeholder="Task name">
+    <button id="task-input-confirm">Add</button>
+    <button id="task-input-cancel">Cancel</button>
+  </div>
+
   <!-- Task template -->
   <template id="task-template">
     <li class="task">

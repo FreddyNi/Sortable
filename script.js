@@ -50,37 +50,67 @@ function createTaskElement(taskName) {
   return newTask;
 }
 
-// Add Main Task event
+// Show the task input modal
+function showTaskInputModal(callback) {
+  const modal = document.getElementById('task-input-modal');
+  const input = document.getElementById('task-input');
+  const confirmButton = document.getElementById('task-input-confirm');
+  const cancelButton = document.getElementById('task-input-cancel');
+
+  modal.style.display = 'block';
+  input.value = '';
+  input.focus();
+
+  function addTask() {
+    modal.style.display = 'none';
+    confirmButton.removeEventListener('click', addTask);
+    cancelButton.removeEventListener('click', hideModal);
+    callback(input.value.trim());
+  }
+
+  function hideModal() {
+    modal.style.display = 'none';
+    confirmButton.removeEventListener('click', addTask);
+    cancelButton.removeEventListener('click', hideModal);
+  }
+
+  confirmButton.addEventListener('click', addTask);
+  cancelButton.addEventListener('click', hideModal);
+}
+
+// Update Add Main Task event
 addMainTaskButton.addEventListener('click', function () {
-  const taskName = prompt('Enter the name of the main task:');
-  if (!taskName) return;
+  showTaskInputModal(function(taskName) {
+    if (!taskName) return;
 
-  const newTask = createTaskElement(taskName);
-  mainList.appendChild(newTask);
+    const newTask = createTaskElement(taskName);
+    mainList.appendChild(newTask);
 
-  // Initialize Sortable on the new task's sublist
-  const sublist = newTask.querySelector('ul');
-  initializeSortable(sublist);
-  sublist.classList.add('sortable-initialized');
+    // Initialize Sortable on the new task's sublist
+    const sublist = newTask.querySelector('ul');
+    initializeSortable(sublist);
+    sublist.classList.add('sortable-initialized');
+  });
 });
 
-// Handle Add Subtask button clicks using event delegation
+// Update Add Subtask event
 document.body.addEventListener('click', function (event) {
   if (event.target.classList.contains('add-subtask-button')) {
     const parentTask = event.target.closest('.task');
-    const taskName = prompt('Enter the name of the subtask:');
-    if (!taskName) return;
+    showTaskInputModal(function(taskName) {
+      if (!taskName) return;
 
-    const newSubtask = createTaskElement(taskName);
+      const newSubtask = createTaskElement(taskName);
 
-    const sublist = parentTask.querySelector('ul');
-    sublist.appendChild(newSubtask);
+      const sublist = parentTask.querySelector('ul');
+      sublist.appendChild(newSubtask);
 
-    // Initialize Sortable on the sublist if not already initialized
-    if (!sublist.classList.contains('sortable-initialized')) {
-      initializeSortable(sublist);
-      sublist.classList.add('sortable-initialized');
-    }
+      // Initialize Sortable on the sublist if not already initialized
+      if (!sublist.classList.contains('sortable-initialized')) {
+        initializeSortable(sublist);
+        sublist.classList.add('sortable-initialized');
+      }
+    });
   }
 });
 
