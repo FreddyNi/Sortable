@@ -19,8 +19,18 @@ ul {
   align-items: center;
 }
 
-.task-header strong {
+.task-header strong, .task-header .task-name {
   flex-grow: 1;
+}
+
+/* Style for main tasks */
+#main-list > .task > .task-header > .task-name {
+  font-weight: bold;
+}
+
+/* Style for subtasks */
+#main-list .task ul .task > .task-header > .task-name {
+  font-weight: normal;
 }
 
 .add-subtask-button {
@@ -64,4 +74,12 @@ ul {
   background: rgba(0, 0, 0, 0.5);
   display: none;
   z-index: 999;
+}
+
+/* Additional styling for edit input */
+.edit-input {
+  width: auto;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 2px;
 }
