@@ -15,7 +15,7 @@ createTestCafe().then((tc) => {
 		.run();
 }).then((actualFailedCount) => {
 	failedCount = actualFailedCount;
-	console.log('FAILED COUNT', actualFailedCount)
+	qconsole.log('FAILED COUNT', actualFailedCount)
     return testcafe.close();
 }).then(() => process.exit(failedCount));
 

@@ -1,0 +1,38 @@
+/* styles.css */
+
+/* Existing styles */
+
+ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+.task {
+  margin: 5px 0;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+}
+
+.task-header strong {
+  flex-grow: 1;
+}
+
+.add-subtask-button {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* Add any additional styles here */
+
+.edit-input {
+  width: auto;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 2px;
+}
