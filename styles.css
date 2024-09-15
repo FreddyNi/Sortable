@@ -19,26 +19,44 @@ ul {
   align-items: center;
 }
 
-.task-header strong, .task-header .task-name {
+.task-header strong,
+.task-header .task-name {
   flex-grow: 1;
 }
 
 /* Style for main tasks */
+#main-list > .task {
+  background-color: #007bff; /* Blue color */
+}
+
 #main-list > .task > .task-header > .task-name {
   font-weight: bold;
+  color: white; /* Ensures text is readable on blue background */
 }
 
 /* Style for subtasks */
+#main-list .task ul .task {
+  background-color: #cce5ff; /* Lighter blue color */
+}
+
 #main-list .task ul .task > .task-header > .task-name {
   font-weight: normal;
+  color: black; /* Text color for subtasks */
+}
+
+/* Optional: Hover effects for better user experience */
+#main-list > .task:hover {
+  background-color: #0056b3; /* Darker blue on hover for main tasks */
+}
+
+#main-list .task ul .task:hover {
+  background-color: #99ccff; /* Darker lighter blue on hover for subtasks */
 }
 
 .add-subtask-button {
   margin-left: 10px;
   cursor: pointer;
 }
-
-/* Add any additional styles here */
 
 /* Modal styles */
 #task-input-modal {

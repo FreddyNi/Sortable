@@ -10,6 +10,10 @@ function getNestingDepth(el) {
 
 // Function to initialize Sortable on a list
 function initializeSortable(list) {
+  if (!list) {
+    console.error('initializeSortable: provided list is null');
+    return;
+  }
   new Sortable(list, {
     group: 'nested',
     animation: 150,
@@ -24,6 +28,7 @@ function initializeSortable(list) {
         evt.from.insertBefore(item, evt.from.children[evt.oldIndex]);
         alert('You cannot nest tasks more than 3 levels deep.');
       }
+      saveTasks();
     }
   });
 }
@@ -33,7 +38,7 @@ const mainList = document.getElementById('main-list');
 initializeSortable(mainList);
 
 // Initialize Sortable on existing nested lists (if any)
-const nestedLists = [].slice.call(document.querySelectorAll('#main-list ul'));
+const nestedLists = Array.from(document.querySelectorAll('#main-list ul'));
 nestedLists.forEach(function (list) {
   initializeSortable(list);
   list.classList.add('sortable-initialized');
@@ -41,11 +46,11 @@ nestedLists.forEach(function (list) {
 
 // References
 const addMainTaskButton = document.getElementById('add-main-task-button');
-const taskTemplate = document.getElementById('task-template');
+const taskTemplate = document.getElementById('task-template').content;
 
 // Function to create a task element
 function createTaskElement(taskName) {
-  const newTask = taskTemplate.content.firstElementChild.cloneNode(true);
+  const newTask = document.importNode(taskTemplate, true);
   newTask.querySelector('.task-name').textContent = taskName;
   return newTask;
 }
@@ -115,37 +120,74 @@ document.body.addEventListener('click', function (event) {
   }
 });
 
-// Handle double-click on task name to enable editing
-document.body.addEventListener('dblclick', function (event) {
+// Handle task name clicks for editing
+document.body.addEventListener('click', function (event) {
   if (event.target.classList.contains('task-name')) {
-    const taskNameElement = event.target;
-    const currentName = taskNameElement.textContent;
-
-    // Create an input field
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = currentName;
-    input.className = 'edit-input';
-
-    // Replace the task name with the input field
-    taskNameElement.replaceWith(input);
-    input.focus();
-
-    // Handle when the user finishes editing
-    input.addEventListener('blur', function () {
-      const newName = input.value.trim() || 'Unnamed Task';
-      const newTaskNameElement = document.createElement('span');
-      newTaskNameElement.className = 'task-name';
-      newTaskNameElement.textContent = newName;
-
-      input.replaceWith(newTaskNameElement);
-    });
-
-    // Optionally handle pressing Enter to finish editing
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        input.blur();
-      }
-    });
+    const currentName = event.target.textContent;
+    const newName = prompt('Edit task name:', currentName);
+    if (newName) {
+      event.target.textContent = newName;
+      saveTasks();
+    }
   }
 });
+
+// Handle Delete Task button clicks
+document.body.addEventListener('click', function (event) {
+  if (event.target.classList.contains('delete-task-button')) {
+    const taskItem = event.target.closest('.task');
+    if (confirm('Are you sure you want to delete this task?')) {
+      taskItem.remove();
+      saveTasks();
+    }
+  }
+});
+
+// Saving and loading tasks
+function saveTasks() {
+  const tasks = [];
+  mainList.querySelectorAll(':scope > .task').forEach(function (task) {
+    tasks.push(serializeTask(task));
+  });
+  localStorage.setItem('taskList', JSON.stringify(tasks));
+}
+
+function serializeTask(task) {
+  const taskData = {
+    name: task.querySelector('.task-name').textContent,
+    subtasks: []
+  };
+  const sublist = task.querySelector('ul');
+  if (sublist) {
+    sublist.querySelectorAll(':scope > .task').forEach(function (subtask) {
+      taskData.subtasks.push(serializeTask(subtask));
+    });
+  }
+  return taskData;
+}
+
+function loadTasks() {
+  const tasks = JSON.parse(localStorage.getItem('taskList'));
+  if (tasks && Array.isArray(tasks)) {
+    mainList.innerHTML = '';
+    tasks.forEach(function (taskData) {
+      const taskElement = createTaskFromData(taskData);
+      mainList.appendChild(taskElement);
+    });
+  }
+}
+
+function createTaskFromData(taskData) {
+  const taskElement = createTaskElement(taskData.name);
+  const sublist = taskElement.querySelector('ul');
+  taskData.subtasks.forEach(function (subtaskData) {
+    const subtaskElement = createTaskFromData(subtaskData);
+    sublist.appendChild(subtaskElement);
+  });
+  initializeSortable(sublist);
+  sublist.classList.add('sortable-initialized');
+  return taskElement;
+}
+
+// Load tasks on page load
+document.addEventListener('DOMContentLoaded', loadTasks);
