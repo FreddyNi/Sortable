@@ -50,7 +50,7 @@ function createTaskElement(taskName) {
   return newTask;
 }
 
-// Show the task input modal
+// Function to show the task input modal
 function showTaskInputModal(callback) {
   const modal = document.getElementById('task-input-modal');
   const input = document.getElementById('task-input');
@@ -78,7 +78,7 @@ function showTaskInputModal(callback) {
   cancelButton.addEventListener('click', hideModal);
 }
 
-// Update Add Main Task event
+// Update Add Main Task event to use modal
 addMainTaskButton.addEventListener('click', function () {
   showTaskInputModal(function(taskName) {
     if (!taskName) return;
@@ -90,10 +90,11 @@ addMainTaskButton.addEventListener('click', function () {
     const sublist = newTask.querySelector('ul');
     initializeSortable(sublist);
     sublist.classList.add('sortable-initialized');
+    saveTasks();
   });
 });
 
-// Update Add Subtask event
+// Update Add Subtask event to use modal
 document.body.addEventListener('click', function (event) {
   if (event.target.classList.contains('add-subtask-button')) {
     const parentTask = event.target.closest('.task');
@@ -101,7 +102,6 @@ document.body.addEventListener('click', function (event) {
       if (!taskName) return;
 
       const newSubtask = createTaskElement(taskName);
-
       const sublist = parentTask.querySelector('ul');
       sublist.appendChild(newSubtask);
 
@@ -110,6 +110,7 @@ document.body.addEventListener('click', function (event) {
         initializeSortable(sublist);
         sublist.classList.add('sortable-initialized');
       }
+      saveTasks();
     });
   }
 });
